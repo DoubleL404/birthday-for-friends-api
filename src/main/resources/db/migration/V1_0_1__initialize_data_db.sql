@@ -10,4 +10,8 @@ INSERT IGNORE INTO `gender` (`name`, `display_name`) VALUES
     ('MALE', 'Male'),
     ('FEMALE', 'Female');
 
+INSERT IGNORE INTO `language` (`code`, `name`, `display_order`) VALUES
+    ('vi', 'Vietnamese', 0),
+    ('en', 'English', 1);
+
 COMMIT;

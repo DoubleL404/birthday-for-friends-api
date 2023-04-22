@@ -1,10 +1,7 @@
 package com.doublel401.java.bff.entity;
 
-import com.doublel401.java.bff.enums.GenderEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,17 +10,19 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "gender")
-public class Gender {
+@Table(name = "language")
+public class Language {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
-    @Enumerated(EnumType.STRING)
-    private GenderEnum name;
+    @Column(name = "code")
+    private String code;
 
-    @Column(name = "display_name", nullable = false)
-    private String displayName;
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "display_order")
+    private Integer displayOrder;
 }
