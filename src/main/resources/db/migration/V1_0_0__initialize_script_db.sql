@@ -23,6 +23,14 @@ CREATE TABLE IF NOT EXISTS `role_permission` (
     CONSTRAINT `fk_role_permission__role` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPdate CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS `refresh_token` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `username` varchar(255) NOT NULL,
+    `token` char(36) NOT NULL,
+    `expired_time` timestamp NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS `gender` (
     `id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(15) NOT NULL,
