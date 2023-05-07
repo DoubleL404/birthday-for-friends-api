@@ -31,4 +31,5 @@ public class ErrorResponseVO {
         this(status, error, message, path);
         this.fieldErrors = fieldErrors;
     }
+
 }

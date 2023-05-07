@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class FieldErrorVO {
     private String field;
-    private String code;
+    private String error;
     private String message;
 }

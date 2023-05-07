@@ -9,7 +9,7 @@ final public class Messages {
     public static final String MSG_FIRST_NAME_BLANK = "Please enter your first name.";
     public static final String MSG_LAST_NAME_BLANK = "Please enter your last name.";
     public static final String MSG_BIRTHDATE_BLANK = "Please enter your birthdate.";
-    public static final String MSG_BIRTHDATE_INVALID_FORMAT = "Your birthdate should follow format (yyyy-MM-dd).";
+    public static final String MSG_BIRTHDATE_INVALID_FORMAT = "Your birthdate should follow format (yyyy/MM/dd).";
     public static final String MSG_BIRTHDATE_INVALID_PAST = "Your birthdate should from the past.";
     public static final String MSG_GENDER_ID_BLANK = "Please select your gender.";
     public static final String MSG_GENDER_NOT_FOUND = "Gender is not found.";

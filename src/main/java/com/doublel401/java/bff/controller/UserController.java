@@ -20,7 +20,7 @@ public class UserController {
 
     @PostMapping("${bff.user.sign.up.url}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseVO<UserResponseVO> signup(@RequestBody SignUpVO signUpVO) {
+    public ResponseVO<UserResponseVO> signUp(@RequestBody SignUpVO signUpVO) {
         return ResponseVO.created("Sign up user successfully.", userService.createUser(signUpVO));
     }
 }

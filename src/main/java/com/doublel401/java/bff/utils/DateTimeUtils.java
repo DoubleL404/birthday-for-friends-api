@@ -11,7 +11,7 @@ import java.time.format.DateTimeParseException;
 final public class DateTimeUtils {
     private DateTimeUtils() {}
 
-    public static final String LOCAL_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String LOCAL_DATE_FORMAT = "yyyy/MM/dd";
 
     /**
      * Helper method for parsing string to LocalDate

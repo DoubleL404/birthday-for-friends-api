@@ -1,7 +1,6 @@
 package com.doublel401.java.bff.utils;
 
 import com.doublel401.java.bff.entity.RefreshToken;
-import com.doublel401.java.bff.exception.AuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -30,6 +29,12 @@ public class TokenUtils {
         hmacKey = new SecretKeySpec(Base64.getDecoder().decode(jwtSecret), SignatureAlgorithm.HS512.getJcaName());
     }
 
+    /**
+     * Helper method for generating access jwt token
+     * @param username username
+     * @param issuer issuer
+     * @return jwt token
+     */
     public String generateAccessToken(String username, String issuer) {
         Instant now = Instant.now();
         return Jwts.builder()
@@ -41,6 +46,12 @@ public class TokenUtils {
                 .compact();
     }
 
+    /**
+     * Helper method for generating refresh token
+     *
+     * @param username username
+     * @return refresh token
+     */
     public RefreshToken generateRefreshToken(String username) {
         return RefreshToken.builder()
                 .username(username)
@@ -49,6 +60,11 @@ public class TokenUtils {
                 .build();
     }
 
+    /**
+     * Helper for get username from jwt token
+     * @param token jwt token
+     * @return username
+     */
     public String getUsernameFromAccessToken(String token) {
         Jws<Claims> claims = Jwts.parserBuilder()
                 .setSigningKey(hmacKey)
@@ -56,15 +72,5 @@ public class TokenUtils {
                 .parseClaimsJws(token);
 
         return claims.getBody().getSubject();
-    }
-
-    public boolean isAccessTokenValid(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(hmacKey)
-                    .build().parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            throw new AuthenticationException("JWT token was expired or invalid", e);
-        }
     }
 }
