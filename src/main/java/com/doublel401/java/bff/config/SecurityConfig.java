@@ -26,6 +26,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private static final String AUTH_URL_PATTERN = "/api/auth/**";
+
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final TokenUtils tokenUtils;
@@ -33,12 +35,8 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
-
     @Value("${bff.user.sign.in.url}")
     private String signInUrl;
-
-    @Value("${bff.user.sign.up.url}")
-    private String signUpUrl;
 
     public SecurityConfig(PasswordEncoder passwordEncoder, UserService userService,
                           TokenUtils tokenUtils, RefreshTokenRepository refreshTokenRepository, CustomAuthenticationEntryPoint authEntryPoint, CustomAccessDeniedHandler accessDeniedHandler)
@@ -60,7 +58,7 @@ public class SecurityConfig {
                 .and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler)
                 .and()
-                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, signUpUrl).permitAll()
+                .authorizeHttpRequests().requestMatchers(HttpMethod.POST, AUTH_URL_PATTERN).permitAll()
                 .anyRequest().authenticated();
 
         // Add filters to security filter chain

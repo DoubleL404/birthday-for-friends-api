@@ -4,23 +4,16 @@ import com.doublel401.java.bff.constant.AppConstants;
 import com.doublel401.java.bff.constant.FieldConstants;
 import com.doublel401.java.bff.constant.MessageCodes;
 import com.doublel401.java.bff.constant.Messages;
-import com.doublel401.java.bff.entity.Gender;
-import com.doublel401.java.bff.entity.Language;
-import com.doublel401.java.bff.entity.Role;
-import com.doublel401.java.bff.entity.User;
+import com.doublel401.java.bff.entity.*;
 import com.doublel401.java.bff.enums.RoleEnum;
 import com.doublel401.java.bff.exception.BadRequestException;
+import com.doublel401.java.bff.exception.IllegalArgumentException;
 import com.doublel401.java.bff.exception.InternalServerException;
-import com.doublel401.java.bff.repository.GenderRepository;
-import com.doublel401.java.bff.repository.LanguageRepository;
-import com.doublel401.java.bff.repository.RoleRepository;
-import com.doublel401.java.bff.repository.UserRepository;
+import com.doublel401.java.bff.repository.*;
 import com.doublel401.java.bff.utils.DateTimeUtils;
-import com.doublel401.java.bff.vo.FieldErrorVO;
-import com.doublel401.java.bff.vo.GenderVO;
-import com.doublel401.java.bff.vo.LanguageVO;
-import com.doublel401.java.bff.vo.SignUpVO;
-import com.doublel401.java.bff.vo.UserResponseVO;
+import com.doublel401.java.bff.utils.TokenUtils;
+import com.doublel401.java.bff.vo.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,13 +22,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -44,16 +35,20 @@ public class UserService implements UserDetailsService {
     private final LanguageRepository languageRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenUtils tokenUtils;
 
     public UserService(UserRepository userRepository, GenderRepository genderRepository,
                        LanguageRepository languageRepository, RoleRepository roleRepository,
-                       PasswordEncoder passwordEncoder)
+                       PasswordEncoder passwordEncoder, RefreshTokenRepository refreshTokenRepository, TokenUtils tokenUtils)
     {
         this.userRepository = userRepository;
         this.genderRepository = genderRepository;
         this.languageRepository = languageRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.tokenUtils = tokenUtils;
     }
 
     /**
@@ -74,6 +69,30 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
 
         return buildFromUser(user);
+    }
+
+    /**
+     * Refresh jwt access token
+     * @param token refresh token
+     * @param request http servlet request
+     * @return TokenResponseVO
+     */
+    public TokenResponseVO refreshToken(String token, HttpServletRequest request) {
+        UUID uuidToken = getTokenFromString(token);
+
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(uuidToken)
+                .orElseThrow(() -> new BadRequestException("Refresh token is invalid"));
+
+        if (Instant.now().isAfter(refreshToken.getExpiredTime())) {
+            throw new BadRequestException("Refresh token is expired");
+        }
+
+        // Get issuer -> the request URL
+        String issuer = request.getRequestURL().toString();
+
+        String accessToken = tokenUtils.generateAccessToken(refreshToken.getUsername(), issuer);
+
+        return new TokenResponseVO(accessToken);
     }
 
     @Override
@@ -247,4 +266,19 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
+    /**
+     * Helper method for getting uuid token from string
+     *
+     * @param token string of token
+     * @return uuid token
+     */
+    private UUID getTokenFromString(String token) {
+        if (StringUtils.isBlank(token)) return null;
+
+        try {
+            return UUID.fromString(token);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Refresh token is invalid");
+        }
+    }
 }
